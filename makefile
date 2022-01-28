@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -std=c++20 -Wall -MMD -g
 EXEC = usu
-OBJECTS = main.o DFA.o
+OBJECTS = main.o DFA.o Lexer.o
 DEPENDS = ${OBJECTS:.o=.d}
 
 ${EXEC}: ${OBJECTS}

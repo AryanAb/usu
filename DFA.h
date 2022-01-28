@@ -3,20 +3,25 @@
 
 #include <array>
 #include <map>
+#include <cstddef>
 
 namespace usu
 {
 	class DFA
 	{
 	public:
-		enum Type{ID, NUM, REAL, IF, WHITESPACE, ERROR};
-		DFA();
+   		enum Type {BREAK, CHAR, CONST, CONTINUE, ENUM, FLOAT, FOR, IF, INT, RETURN, VOID, WHILE, LPAREN, RPAREN, LBRACKET, RBRACKET, ASSIGN, EQ, NEQ, GE, GT, LT, LE, ARROW, MULT, PLUS, SUB, DIV, MOD, ID, COMMENT, WHITESPACE, ERROR};
 		
+		DFA();
+		size_t step(size_t state, char c);
+		Type getStateToken(size_t state);
+
 	private:
-		static constexpr int NUM_STATES = 14;
-		const std::map<int, Type> accepting{{2, Type::ID}, {3, Type::IF}, {4, Type::ID}, {5, Type::ERROR}, {6, Type::REAL},
-			{7, Type::NUM}, {8, Type::REAL}, {9, Type::ERROR}, {11, Type::WHITESPACE}, {12, Type::WHITESPACE}, {13, Type::WHITESPACE}};
-		std::array<std::array<int, 128>, NUM_STATES> transition_matrix;
+		static constexpr size_t NUM_STATES = 77;
+		std::array<std::array<char, 128>, NUM_STATES> transition_matrix;
+		std::map<size_t, Type> accepting;
+		void constructTransitionMatrix();
+		void constructAcceptingStates();
 	};
 };
 
