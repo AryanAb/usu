@@ -138,16 +138,16 @@ namespace usu
 
 		for (char c = '0'; c <= '9'; ++c) { transition_matrix[1][c] = 71; }
 		for (char c = '0'; c <= '9'; ++c) { transition_matrix[71][c] = 71; }
-		// INT
+		// NUM
 		
 		transition_matrix[72]['.'] = 72;
 		for (char c = '0'; c <= '9'; ++c) { transition_matrix[72][c] = 73; }
 		for (char c = '0'; c <= '9'; ++c) { transition_matrix[73][c] = 73; }
 		// FLOAT
 		
-		transition_matrix[1]['\\'] = 74;
+		transition_matrix[1]['#'] = 74;
 		for (char c = 0; c > -1 && c < 128; ++c) { transition_matrix[74][c] = 74; }
-		transition_matrix[74]['\\'] = 75;
+		transition_matrix[74]['#'] = 75;
 		// COMMENT
 
 		transition_matrix[1][' '] = 76;
@@ -199,7 +199,7 @@ namespace usu
 		accepting.insert({69, Type::ARROW});
 
 		accepting.insert({70, Type::ID});
-		accepting.insert({71, Type::INT});
+		accepting.insert({71, Type::NUM});
 		accepting.insert({72, Type::FLOAT});
 		accepting.insert({75, Type::COMMENT});
 		accepting.insert({76, Type::WHITESPACE});

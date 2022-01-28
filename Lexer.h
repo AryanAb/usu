@@ -12,11 +12,8 @@ namespace usu
 	{
 	public:
 		std::vector<DFA::Type> analyse(const std::string &prog);
-	private:
-		int last_final_state = 0;
-		int last_final_position = 0;
-		int current_state = 1;
-	};
+		void print(std::vector<DFA::Type> res);
+   	};
 };
 
 #endif
