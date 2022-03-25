@@ -1,15 +1,30 @@
-CXX = g++
-CXXFLAGS = -std=c++20 -Wall -MMD -g
-EXEC = usu
-OBJECTS = Messages.o Exception.o main.o DFA.o Lexer.o Expressions.o
-DEPENDS = ${OBJECTS:.o=.d}
+SRC_DIR := src
+OBJ_DIR := obj
+BIN_DIR := bin
 
-${EXEC}: ${OBJECTS}
-	${CXX} ${CXXFLAGS} ${OBJECTS} -o ${EXEC}
+EXE := $(BIN_DIR)/usu
+SRC := $(wildcard $(SRC_DIR)/*.cc)
+OBJ := $(SRC:$(SRC_DIR)/%.cc=$(OBJ_DIR)/%.o)
 
--include ${DEPENDS}
+CPPFLAGS := -Iinclude -MMD -MP
+CXXFLAGS := -Wall
+LDFLAGS := -Llib
+LDLIBS := -lm
 
-.PHONY: clean
+.PHONY: all clean
+
+all: $(EXE)
+
+$(EXE): $(OBJ) | $(BIN_DIR)
+	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cc | $(OBJ_DIR)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+$(BIN_DIR) $(OBJ_DIR):
+	mkdir -p $@
 
 clean:
-	rm ${OBJECTS} ${DEPENDS} ${EXEC}
+	@$(RM) -rv $(OBJ_DIR)
+
+-include $(OBJ:.o=.d)
