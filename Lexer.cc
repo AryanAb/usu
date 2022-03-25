@@ -1,177 +1,202 @@
 #include "Lexer.h"
 
+#include "Messages.h"
+#include "Exception.h"
+
 #include <iostream>
-#include <fstream>
 #include <string>
 
 namespace usu
 {
-	std::vector<DFA::Type> Lexer::analyse(const std::string &path)
+	std::vector<std::pair<DFA::Token, std::string>> Lexer::analyse(const std::string &src)
 	{
 		DFA dfa;
-		std::vector<DFA::Type> res;
+		std::vector<std::pair<DFA::Token, std::string>> res;
 		int last_final_state = 0;
 		int last_final_position = 0;
 		int current_state = 1;
 		int line_num = 1;
+		std::string word = "";
 		
-		std::ifstream f{path};
-		std::string line;
-		
-		while (std::getline(f, line))
+		for (size_t i = 0; i < src.length(); ++i)
 		{
-			last_final_position = 0;
-			for (size_t i = 0; i < line.length(); ++i)
+			char c = src.at(i);
+			current_state = dfa.step(current_state, c);
+			
+			if (current_state == 0)
 			{
-				char c = line.at(i);
+				current_state = 1;
+				DFA::Token last_final_state_token = dfa.getStateToken(last_final_state);
 
-				current_state = dfa.step(current_state, c);
-				if (current_state == 0)
+				if (last_final_state_token == DFA::Token::ERROR)
 				{
-					current_state = 1;
-					DFA::Type last_final_state_token = dfa.getStateToken(last_final_state);
-
-					if (last_final_state_token == DFA::Type::ERROR)
-					{
-						std::cerr << "\033[1;31mERROR\033[0m: Invalid token at line " << line_num << ", position " << last_final_position + 1 << "." << std::endl;
-						break;
-					}
+					auto l = getLocation(src, last_final_position);
+					auto msg = Messages::error("Invalid token '" + word + "' at line: " + std::to_string(l.first) + ", " + std::to_string(l.second));
+					throw Exception("lexing", msg);
+				}
 					
-					res.push_back(last_final_state_token);
-					last_final_state = 0;
+				res.push_back(std::make_pair(last_final_state_token, word));
+				word = "";
+				last_final_state = 0;
 				
-					i = last_final_position;
-				}
-				else if (current_state != 74)
-				{
-					last_final_state = current_state;
-					last_final_position = i;
-				}
+				i = last_final_position;
 			}
-
-			if (current_state == 74)
+			else if (current_state != 74)
 			{
-				std::cerr << "\033[1;31mERROR\033[0m: Missing closing '#' on comment starting at line " << line_num << ", position " << last_final_position + 2 << "." << std::endl;
-				break;
+				word += c;
+				last_final_state = current_state;
+				last_final_position = i;
 			}
 
-			++line_num;
-		} 
+			if (c == '\n') ++line_num;
+		}
+
+		if (current_state == 74)
+		{
+			std::pair<size_t, size_t> l = getLocation(src, last_final_position);
+		   std::string msg = Messages::error("Missing closing '#' on comment starting at line: " + std::to_string(l.first) + ", " + std::to_string(l.second));
+		   throw Exception("lexing", msg);
+		}
 
 		return res;
 	}
 
 
-	void Lexer::print(std::vector<DFA::Type> res)
+	void Lexer::print(std::vector<std::pair<DFA::Token, std::string>> res)
 	{
 		for (auto t : res)
 		{
-			switch (t)
+			if (t.first == DFA::Token::WHITESPACE || t.first == DFA::Token::COMMENT) continue;
+			
+			switch (t.first)
 			{
-			case DFA::Type::BREAK:
-				std::cout << "BREAK";
+			case DFA::Token::BREAK:
+				std::cout << "(BREAK, '" << t.second << "')";
 				break;
-			case DFA::Type::CHAR:
-				std::cout << "CHAR";
+			case DFA::Token::CHAR:
+				std::cout << "(CHAR, '" << t.second << "')";
 				break;
-			case DFA::Type::CONST:
-				std::cout << "CONST" ;
+			case DFA::Token::CONST:
+				std::cout << "(CONST, '" << t.second << "')";
 				break;
-			case DFA::Type::CONTINUE:
-				std::cout << "CONTINUE" ;
+			case DFA::Token::CONTINUE:
+				std::cout << "(CONTINU, '" << t.second << "')";
 				break;
-			case DFA::Type::ENUM:
-				std::cout << "ENUM" ;
+			case DFA::Token::ENUM:
+				std::cout << "(ENUM, '" << t.second << "')";
 				break;
-			case DFA::Type::FLOAT:
-				std::cout << "FLOAT" ;
+			case DFA::Token::FLOAT:
+				std::cout << "(FLOAT, '" << t.second << "')";
 				break;
-			case DFA::Type::FOR:
-				std::cout << "FOR" ;
+			case DFA::Token::FOR:
+				std::cout << "(FOR, '" << t.second << "')";
 				break;
-			case DFA::Type::IF:
-				std::cout << "IF" ;
+			case DFA::Token::IF:
+				std::cout << "(IF, '" << t.second << "')";
 				break;
-			case DFA::Type::INT:
-				std::cout << "INT" ;
+			case DFA::Token::INT:
+				std::cout << "(INT, '" << t.second << "')";
 				break;
-			case DFA::Type::RETURN:
-				std::cout << "RETURN" ;
+			case DFA::Token::RETURN:
+				std::cout << "(RETURN, '" << t.second << "')";
 				break;
-			case DFA::Type::VOID:
-				std::cout << "VOID" ;
+			case DFA::Token::VOID:
+				std::cout << "(VOID, '" << t.second << "')";
 				break;
-			case DFA::Type::WHILE:
-				std::cout << "WHILE" ;
+			case DFA::Token::WHILE:
+				std::cout << "(WHILE, '" << t.second << "')";
 				break;
-			case DFA::Type::LPAREN:
-				std::cout << "LPAREN" ;
+			case DFA::Token::LPAREN:
+				std::cout << "(LPAREN, '" << t.second << "')";
 				break;
-			case DFA::Type::RPAREN:
-				std::cout << "RPAREN" ;
+			case DFA::Token::RPAREN:
+				std::cout << "(RPAREN, '" << t.second << "')";
 				break;
-			case DFA::Type::RBRACKET:
-				std::cout << "RBRACKET" ;
+			case DFA::Token::RBRACKET:
+				std::cout << "(RBRACKET, '" << t.second << "')";
 				break;
-			case DFA::Type::LBRACKET:
-				std::cout << "LBRACKET" ;
+			case DFA::Token::LBRACKET:
+				std::cout << "(LBRACKET, '" << t.second << "')";
 				break;
-			case DFA::Type::ASSIGN:
-				std::cout << "ASSGIN" ;
+			case DFA::Token::ASSIGN:
+				std::cout << "(ASSGIN, '" << t.second << "')";
 				break;
-			case DFA::Type::EQ:
-				std::cout << "EQ" ;
+			case DFA::Token::EQ:
+				std::cout << "(EQ, '" << t.second << "')";
 				break;
-			case DFA::Type::NEQ:
-				std::cout << "NEQ" ;
+			case DFA::Token::NEQ:
+				std::cout << "(NEQ, '" << t.second << "')";
 				break;
-			case DFA::Type::GE:
-				std::cout << "GE" ;
+			case DFA::Token::GE:
+				std::cout << "(GE, '" << t.second << "')";
 				break;
-			case DFA::Type::GT:
-				std::cout << "GT" ;
+			case DFA::Token::GT:
+				std::cout << "(GT, '" << t.second << "')";
 				break;
-			case DFA::Type::LT:
-				std::cout << "LT" ;
+			case DFA::Token::LT:
+				std::cout << "(LT, '" << t.second << "')";
 				break;
-			case DFA::Type::LE:
-				std::cout << "LE" ;
+			case DFA::Token::LE:
+				std::cout << "(LE, '" << t.second << "')";
 				break;
-			case DFA::Type::ARROW:
-				std::cout << "ARROW" ;
+			case DFA::Token::ARROW:
+				std::cout << "(ARROW, '" << t.second << "')";
 				break;
-			case DFA::Type::MULT:
-				std::cout << "MULT" ;
+			case DFA::Token::MULT:
+				std::cout << "(MULT, '" << t.second << "')";
 				break;
-			case DFA::Type::PLUS:
-				std::cout << "PLUS" ;
+			case DFA::Token::PLUS:
+				std::cout << "(PLUS, '" << t.second << "')";
 				break;
-			case DFA::Type::SUB:
-				std::cout << "SUB" ;
+			case DFA::Token::SUB:
+				std::cout << "(SUB, '" << t.second << "')";
 				break;
-			case DFA::Type::DIV:
-				std::cout << "DIV" ;
+			case DFA::Token::DIV:
+				std::cout << "(DIV, '" << t.second << "')";
 				break;
-			case DFA::Type::MOD:
-				std::cout << "MOD" ;
+			case DFA::Token::MOD:
+				std::cout << "(MOD, '" << t.second << "')";
 				break;
-			case DFA::Type::ID:
-				std::cout << "ID" ;
+			case DFA::Token::ID:
+				std::cout << "(ID, '" << t.second << "')";
 				break;
-			case DFA::Type::NUM:
-				std::cout << "NUM";
+			case DFA::Token::NUM:
+				std::cout << "(NUM, '" << t.second << "')";
 				break;
-			case DFA::Type::COMMENT:
-				std::cout << "COMMENT" ;
+			case DFA::Token::COMMENT:
+				std::cout << "(COMMENT, '" << t.second << "')";
 				break;
-			case DFA::Type::WHITESPACE:
-				std::cout << "WHITESPACE";
+			case DFA::Token::WHITESPACE:
+				std::cout << "(WHITESPACE, '" << t.second << "')";
 				break;
-			case DFA::Type::ERROR:
-				std::cout << "ERROR";
+			case DFA::Token::COMMA:
+				std::cout << "(COMMA, '" << t.second << "')";
+				break;
+			case DFA::Token::STRING:
+				std::cout << "(STRING, '" << t.second << "')";
+				break;
+			case DFA::Token::ERROR:
+				std::cout << "(ERROR, '" << t.second << "')";
+				break;
 			}
 			std::cout << " ";
 		}
 		std::cout << std::endl;
+	}
+
+	std::pair<size_t, size_t> Lexer::getLocation(const std::string &str, size_t pos)
+	{
+		size_t line_num = 1;
+		size_t column = 1;
+		for (size_t i = 0; i < pos; ++i)
+		{
+			if (str[i] == '\n')
+			{
+				++line_num;
+				column = 1;
+			}
+			++column;
+		}
+		return std::make_pair(line_num, column);
 	}
 };

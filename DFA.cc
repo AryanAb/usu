@@ -129,8 +129,6 @@ namespace usu
 
 		transition_matrix[64]['>'] = 69; // ARROW
 
-		for (char c = 'A'; c <= 'Z'; ++c) { transition_matrix[1][c] = 70; }
-		//for (char c = 'a'; c <= 'z'; ++c) { transition_matrix[1][c] = 70; }
 		for (char c = '0'; c <= '9'; ++c) { transition_matrix[70][c] = 70; }
 		for (char c = 'A'; c <= 'Z'; ++c) { transition_matrix[70][c] = 70; }
 		for (char c = 'a'; c <= 'z'; ++c) { transition_matrix[70][c] = 70; }
@@ -140,7 +138,7 @@ namespace usu
 		for (char c = '0'; c <= '9'; ++c) { transition_matrix[71][c] = 71; }
 		// NUM
 		
-		transition_matrix[72]['.'] = 72;
+		transition_matrix[71]['.'] = 72;
 		for (char c = '0'; c <= '9'; ++c) { transition_matrix[72][c] = 73; }
 		for (char c = '0'; c <= '9'; ++c) { transition_matrix[73][c] = 73; }
 		// FLOAT
@@ -154,6 +152,15 @@ namespace usu
 		transition_matrix[1]['\n'] = 76;
 		transition_matrix[1]['\t'] = 76;
 		// WHITEPSACE
+
+		transition_matrix[1][','] = 77;
+		// COMMA
+
+		transition_matrix[1]['"'] = 78;
+		for (char c = 0; c > -1 && c < 128; ++c) { transition_matrix[78][c] = 78; }
+		transition_matrix[78]['"'] = 79;
+		// STRING
+		
 	}
 
 	
@@ -161,48 +168,52 @@ namespace usu
 	{
 		for (size_t i = 0; i <= 49; ++i)
 		{
-			accepting.insert({i, Type::ID});
+			accepting.insert({i, Token::ID});
 		}
-		accepting[6] = Type::BREAK;
-		accepting[10] = Type::CHAR;
-		accepting[14] = Type::CONST;
-		accepting[19] = Type::CONTINUE;
-		accepting[23] = Type::ENUM;
-		accepting[28] = Type::FLOAT;
-		accepting[30] = Type::FOR;
-		accepting[32] = Type::IF;
-		accepting[34] = Type::INT;
-		accepting[40] = Type::RETURN;
-		accepting[44] = Type::VOID;
-		accepting[49] = Type::WHILE;
+		accepting[6] = Token::BREAK;
+		accepting[10] = Token::CHAR;
+		accepting[14] = Token::CONST;
+		accepting[19] = Token::CONTINUE;
+		accepting[23] = Token::ENUM;
+		accepting[28] = Token::FLOAT;
+		accepting[30] = Token::FOR;
+		accepting[32] = Token::IF;
+		accepting[34] = Token::INT;
+		accepting[40] = Token::RETURN;
+		accepting[44] = Token::VOID;
+		accepting[49] = Token::WHILE;
 
-		accepting.insert({50, Type::LPAREN});
-		accepting.insert({51, Type::RPAREN});
-		accepting.insert({52, Type::LBRACKET});
-		accepting.insert({53, Type::RBRACKET});
+		accepting.insert({50, Token::LPAREN});
+		accepting.insert({51, Token::RPAREN});
+		accepting.insert({52, Token::LBRACKET});
+		accepting.insert({53, Token::RBRACKET});
 
-		accepting.insert({55, Type::ASSIGN});
-		accepting.insert({57, Type::EQ});
-		accepting.insert({59, Type::NEQ});
+		accepting.insert({55, Token::ASSIGN});
+		accepting.insert({57, Token::EQ});
+		accepting.insert({59, Token::NEQ});
 		
-		accepting.insert({60, Type::GT});
-		accepting.insert({61, Type::GE});
-		accepting.insert({62, Type::LT});
-		accepting.insert({63, Type::LE});
+		accepting.insert({60, Token::GT});
+		accepting.insert({61, Token::GE});
+		accepting.insert({62, Token::LT});
+		accepting.insert({63, Token::LE});
 
-		accepting.insert({64, Type::SUB});
-		accepting.insert({65, Type::PLUS});
-		accepting.insert({66, Type::MULT});
-		accepting.insert({67, Type::DIV});
-		accepting.insert({68, Type::MOD});
+		accepting.insert({64, Token::SUB});
+		accepting.insert({65, Token::PLUS});
+		accepting.insert({66, Token::MULT});
+		accepting.insert({67, Token::DIV});
+		accepting.insert({68, Token::MOD});
 
-		accepting.insert({69, Type::ARROW});
+		accepting.insert({69, Token::ARROW});
 
-		accepting.insert({70, Type::ID});
-		accepting.insert({71, Type::NUM});
-		accepting.insert({72, Type::FLOAT});
-		accepting.insert({75, Type::COMMENT});
-		accepting.insert({76, Type::WHITESPACE});
+		accepting.insert({70, Token::ID});
+		accepting.insert({71, Token::NUM});
+		accepting.insert({72, Token::FLOAT});
+		accepting.insert({75, Token::COMMENT});
+		accepting.insert({76, Token::WHITESPACE});
+
+		accepting.insert({77, Token::COMMA});
+		
+		accepting.insert({79, Token::STRING});
 	}
 
 	
@@ -219,10 +230,10 @@ namespace usu
 	}
 
 	
-	DFA::Type DFA::getStateToken(size_t state)
+	DFA::Token DFA::getStateToken(size_t state)
 	{
 		if (accepting.count(state) != 0)
 			return accepting.at(state);
-		return Type::ERROR;
+		return Token::ERROR;
 	}
 };

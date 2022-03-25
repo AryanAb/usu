@@ -1,5 +1,7 @@
-int main()
+int main(int a, int b)
 {
-	# Commented line #
-	int i = 0
+	# This is a comment
+	  Multi line #
+	int a := 10
+	print("Hello World")
 }

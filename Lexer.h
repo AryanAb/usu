@@ -1,19 +1,19 @@
-#ifndef __LEXER_H
-#define __LEXER_H
+#pragma once
 
 #include "DFA.h"
 
 #include <vector>
 #include <string>
+#include <utility>
 
 namespace usu
 {
 	class Lexer
 	{
 	public:
-		std::vector<DFA::Type> analyse(const std::string &prog);
-		void print(std::vector<DFA::Type> res);
+		std::vector<std::pair<DFA::Token, std::string>> analyse(const std::string &prog);
+		void print(std::vector<std::pair<DFA::Token, std::string>> res);
+		std::pair<size_t, size_t> getLocation(const std::string &str, size_t pos);
    	};
 };
 
-#endif
