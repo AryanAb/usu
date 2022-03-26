@@ -1,7 +1,8 @@
 int main(int a, int b)
 {
-	# This is a comment
-	  Multi line #
+	# This is a
+	  multi-line comment #
 	int a := 10
+	float b := 10.0
 	print("Hello World")
 }

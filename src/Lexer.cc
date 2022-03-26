@@ -30,8 +30,8 @@ namespace usu
 
 				if (last_final_state_token == DFA::Token::ERROR)
 				{
-					auto l = getLocation(src, last_final_position);
-					auto msg = Messages::error("Invalid token '" + word + "' at line: " + std::to_string(l.first) + ", " + std::to_string(l.second));
+					std::pair<size_t, size_t> loc = getLocation(src, last_final_position);
+					std::string msg = Messages::error("Invalid token '" + word + "' at line: " + std::to_string(loc.first) + ", " + std::to_string(loc.second));
 					throw Exception("lexing", msg);
 				}
 					
@@ -53,9 +53,9 @@ namespace usu
 
 		if (current_state == 74)
 		{
-			std::pair<size_t, size_t> l = getLocation(src, last_final_position);
-		   std::string msg = Messages::error("Missing closing '#' on comment starting at line: " + std::to_string(l.first) + ", " + std::to_string(l.second));
-		   throw Exception("lexing", msg);
+			std::pair<size_t, size_t> loc = getLocation(src, last_final_position);
+			std::string msg = Messages::error("Missing closing '#' on comment starting at line: " + std::to_string(loc.first) + ", " + std::to_string(loc.second));
+			throw Exception("lexing", msg);
 		}
 
 		return res;
@@ -159,9 +159,6 @@ namespace usu
 				break;
 			case DFA::Token::ID:
 				std::cout << "(ID, '" << t.second << "')";
-				break;
-			case DFA::Token::NUM:
-				std::cout << "(NUM, '" << t.second << "')";
 				break;
 			case DFA::Token::COMMENT:
 				std::cout << "(COMMENT, '" << t.second << "')";

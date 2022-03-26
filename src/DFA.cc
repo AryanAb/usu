@@ -136,7 +136,7 @@ namespace usu
 
 		for (char c = '0'; c <= '9'; ++c) { transition_matrix[1][c] = 71; }
 		for (char c = '0'; c <= '9'; ++c) { transition_matrix[71][c] = 71; }
-		// NUM
+		// INT
 		
 		transition_matrix[71]['.'] = 72;
 		for (char c = '0'; c <= '9'; ++c) { transition_matrix[72][c] = 73; }
@@ -206,8 +206,8 @@ namespace usu
 		accepting.insert({69, Token::ARROW});
 
 		accepting.insert({70, Token::ID});
-		accepting.insert({71, Token::NUM});
-		accepting.insert({72, Token::FLOAT});
+		accepting.insert({71, Token::INT});
+		accepting.insert({73, Token::FLOAT});
 		accepting.insert({75, Token::COMMENT});
 		accepting.insert({76, Token::WHITESPACE});
 
