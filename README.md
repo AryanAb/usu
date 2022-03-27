@@ -1,5 +1,7 @@
 # usu
 
+[![AryanAb](https://circleci.com/gh/AryanAb/usu.svg?style=shield)](https://app.circleci.com/pipelines/github/AryanAb/usu?filter=all)
+
 usu is a very simple programming language that is currently work in progress. Usu is latin for practice. As the name implies, the language is meant to be just for practicing compiler concepts and nothing too serious. Contributions and criticisms are welcomed.
 
 ## Sample Program
