@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: "debian:strech"
+      - image: "debian"
     steps:
       - checkout
       - run:
