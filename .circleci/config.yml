@@ -1,0 +1,17 @@
+version: 2.1
+
+jobs:
+    build:
+        docker:
+            - image: "debian"
+        steps:
+            - checkout
+            - run:
+                name: Installing build tools
+                command: 'apt-get update && apt-get install -y build-essential'
+            - run:
+                name: Installing g++-10
+                command: 'apt-get update && apt-get install -y gcc-10 g++-10'
+            - run:
+                name: Compiling
+                command: 'make'
