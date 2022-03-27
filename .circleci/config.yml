@@ -8,7 +8,7 @@ jobs:
             - checkout
             - run:
                 name: Installing build tools
-                command: 'apt-get install build-essential'
+                command: 'apt-get install make'
             - run:
                 name: Installing g++-10
                 command: 'apt-get update && apt-get install -y gcc-10 g++-10'
