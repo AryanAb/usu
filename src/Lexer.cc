@@ -5,17 +5,18 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <utility>
 
 namespace usu
 {
-	std::vector<std::pair<DFA::Token, std::string>> Lexer::analyse(const std::string &src)
+	std::vector<std::pair<usu::DFA::Token, std::string>> Lexer::analyze(const std::string &src)
 	{
 		DFA dfa;
 		std::vector<std::pair<DFA::Token, std::string>> res;
 		int last_final_state = 0;
 		int last_final_position = 0;
 		int current_state = 1;
-		int line_num = 1;
 		std::string word = "";
 		
 		for (size_t i = 0; i < src.length(); ++i)
@@ -30,8 +31,7 @@ namespace usu
 
 				if (last_final_state_token == DFA::Token::ERROR)
 				{
-					std::pair<size_t, size_t> loc = getLocation(src, last_final_position);
-					std::string msg = Messages::error("Invalid token '" + word + "' at line: " + std::to_string(loc.first) + ", " + std::to_string(loc.second));
+					std::string msg = Messages::error("Invalid token: '" + word + "'");
 					throw Exception("lexing", msg);
 				}
 					
@@ -41,139 +41,102 @@ namespace usu
 				
 				i = last_final_position;
 			}
-			else if (current_state != 74)
+			else if (current_state != 51)
 			{
 				word += c;
 				last_final_state = current_state;
 				last_final_position = i;
 			}
-
-			if (c == '\n') ++line_num;
-		}
-
-		if (current_state == 74)
-		{
-			std::pair<size_t, size_t> loc = getLocation(src, last_final_position);
-			std::string msg = Messages::error("Missing closing '#' on comment starting at line: " + std::to_string(loc.first) + ", " + std::to_string(loc.second));
-			throw Exception("lexing", msg);
 		}
 
 		return res;
 	}
 
-
-	void Lexer::print(std::vector<std::pair<DFA::Token, std::string>> res)
+	void Lexer::print(std::vector<std::pair<usu::DFA::Token, std::string>> tokens)
 	{
-		for (auto t : res)
+		for (auto token : tokens)
 		{
-			if (t.first == DFA::Token::WHITESPACE || t.first == DFA::Token::COMMENT) continue;
+			if (token.first == DFA::Token::WHITESPACE || token.first == DFA::Token::COMMENT) continue;
 			
-			switch (t.first)
+			switch (token.first)
 			{
-			case DFA::Token::BREAK:
-				std::cout << "(BREAK, '" << t.second << "')";
+			case DFA::Token::LESS:
+				std::cout << "(LESS, '" << token.second << "')";
 				break;
-			case DFA::Token::CHAR:
-				std::cout << "(CHAR, '" << t.second << "')";
+			case DFA::Token::LENGTH:
+				std::cout << "(LENGTH, '" << token.second << "')";
 				break;
-			case DFA::Token::CONST:
-				std::cout << "(CONST, '" << t.second << "')";
+			case DFA::Token::TIME:
+				std::cout << "(TIME, '" << token.second << "')";
 				break;
-			case DFA::Token::CONTINUE:
-				std::cout << "(CONTINU, '" << t.second << "')";
+			case DFA::Token::MASS:
+				std::cout << "(MASS, '" << token.second << "')";
 				break;
-			case DFA::Token::ENUM:
-				std::cout << "(ENUM, '" << t.second << "')";
+			case DFA::Token::CURRENT:
+				std::cout << "(CURRENT, '" << token.second << "')";
 				break;
-			case DFA::Token::FLOAT:
-				std::cout << "(FLOAT, '" << t.second << "')";
+			case DFA::Token::TEMP:
+				std::cout << "(TEMP, '" << token.second << "')";
 				break;
-			case DFA::Token::FOR:
-				std::cout << "(FOR, '" << t.second << "')";
+			case DFA::Token::AMOUNT:
+				std::cout << "(AMOUNT, '" << token.second << "')";
 				break;
-			case DFA::Token::IF:
-				std::cout << "(IF, '" << t.second << "')";
+			case DFA::Token::A:
+				std::cout << "(A, '" << token.second << "')";
 				break;
-			case DFA::Token::INT:
-				std::cout << "(INT, '" << t.second << "')";
+			case DFA::Token::M:
+				std::cout << "(M, '" << token.second << "')";
 				break;
-			case DFA::Token::RETURN:
-				std::cout << "(RETURN, '" << t.second << "')";
+			case DFA::Token::S:
+				std::cout << "(S, '" << token.second << "')";
 				break;
-			case DFA::Token::VOID:
-				std::cout << "(VOID, '" << t.second << "')";
+			case DFA::Token::KG:
+				std::cout << "(KG, '" << token.second << "')";
 				break;
-			case DFA::Token::WHILE:
-				std::cout << "(WHILE, '" << t.second << "')";
+			case DFA::Token::LUM:
+				std::cout << "(LUM, '" << token.second << "')";
 				break;
-			case DFA::Token::LPAREN:
-				std::cout << "(LPAREN, '" << t.second << "')";
+			case DFA::Token::K:
+				std::cout << "(K, '" << token.second << "')";
 				break;
-			case DFA::Token::RPAREN:
-				std::cout << "(RPAREN, '" << t.second << "')";
+			case DFA::Token::MOL:
+				std::cout << "(MOL, '" << token.second << "')";
 				break;
-			case DFA::Token::RBRACKET:
-				std::cout << "(RBRACKET, '" << t.second << "')";
-				break;
-			case DFA::Token::LBRACKET:
-				std::cout << "(LBRACKET, '" << t.second << "')";
+			case DFA::Token::CD:
+				std::cout << "(CD, '" << token.second << "')";
 				break;
 			case DFA::Token::ASSIGN:
-				std::cout << "(ASSGIN, '" << t.second << "')";
+				std::cout << "(ASSGIN, '" << token.second << "')";
 				break;
-			case DFA::Token::EQ:
-				std::cout << "(EQ, '" << t.second << "')";
-				break;
-			case DFA::Token::NEQ:
-				std::cout << "(NEQ, '" << t.second << "')";
-				break;
-			case DFA::Token::GE:
-				std::cout << "(GE, '" << t.second << "')";
-				break;
-			case DFA::Token::GT:
-				std::cout << "(GT, '" << t.second << "')";
-				break;
-			case DFA::Token::LT:
-				std::cout << "(LT, '" << t.second << "')";
-				break;
-			case DFA::Token::LE:
-				std::cout << "(LE, '" << t.second << "')";
-				break;
-			case DFA::Token::ARROW:
-				std::cout << "(ARROW, '" << t.second << "')";
+			case DFA::Token::DEFINE:
+				std::cout << "(DEFINE, '" << token.second << "')";
 				break;
 			case DFA::Token::MULT:
-				std::cout << "(MULT, '" << t.second << "')";
+				std::cout << "(MULT, '" << token.second << "')";
 				break;
 			case DFA::Token::PLUS:
-				std::cout << "(PLUS, '" << t.second << "')";
+				std::cout << "(PLUS, '" << token.second << "')";
 				break;
 			case DFA::Token::SUB:
-				std::cout << "(SUB, '" << t.second << "')";
+				std::cout << "(SUB, '" << token.second << "')";
 				break;
 			case DFA::Token::DIV:
-				std::cout << "(DIV, '" << t.second << "')";
-				break;
-			case DFA::Token::MOD:
-				std::cout << "(MOD, '" << t.second << "')";
+				std::cout << "(DIV, '" << token.second << "')";
 				break;
 			case DFA::Token::ID:
-				std::cout << "(ID, '" << t.second << "')";
+				std::cout << "(ID, '" << token.second << "')";
+				break;
+			case DFA::Token::NUMBER:
+				std::cout << "(NUMBER, '" << token.second << "')";
 				break;
 			case DFA::Token::COMMENT:
-				std::cout << "(COMMENT, '" << t.second << "')";
+				std::cout << "(COMMENT, '" << token.second << "')";
 				break;
 			case DFA::Token::WHITESPACE:
-				std::cout << "(WHITESPACE, '" << t.second << "')";
-				break;
-			case DFA::Token::COMMA:
-				std::cout << "(COMMA, '" << t.second << "')";
-				break;
-			case DFA::Token::STRING:
-				std::cout << "(STRING, '" << t.second << "')";
+				std::cout << "(WHITESPACE, '" << token.second << "')";
 				break;
 			case DFA::Token::ERROR:
-				std::cout << "(ERROR, '" << t.second << "')";
+				std::cout << "(ERROR, '" << token.second << "')";
 				break;
 			}
 			std::cout << " ";

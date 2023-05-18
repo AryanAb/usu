@@ -36,8 +36,6 @@ namespace usu
 		case DFA::Token::DIV:
 			std::cout << " / ";
 			break;
-		case DFA::Token::MOD:
-			std::cout << " % ";
 			break;
 		default:
 			throw Exception("parsing", Messages::error("Encountered invalid token in BinExp"));

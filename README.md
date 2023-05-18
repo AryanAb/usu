@@ -42,7 +42,7 @@ length err = a + k        # Error: cannot add variables of dimension length to t
 ### Tokens
 
 ```
-LESS, LENGTH, TIME, MASS, CURRENT, TEMP, AMOUNT, LUM, ID, ASSIGN, NUMBER, M, S, KG, A, K, MOL, CD, PLUS, MINUS, MULT, DIV, DEFINE, SEMICOLUMN, RETURN, LCBRACKET, RCBRACKET, LPAREN, RPAREN
+LESS, LENGTH, TIME, MASS, CURRENT, TEMP, AMOUNT, LUM, ID, ASSIGN, NUMBER, M, S, KG, A, K, MOL, CD, PLUS, MINUS, MULT, DIV, DEFINE
 ```
 
 ### Grammar

@@ -10,7 +10,7 @@ namespace usu
 
 	void Exception::details() const
 	{
-		std::cout << "Compilation failed while " << process << "." << std::endl;
-		std::cout << msg << std::endl;
+		std::cerr << "Compilation failed while " << process << "." << std::endl;
+		std::cerr << msg << std::endl;
 	}
 };

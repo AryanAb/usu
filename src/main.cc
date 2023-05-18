@@ -1,32 +1,30 @@
 #include "Lexer.h"
-
 #include "Exception.h"
 
 #include <iostream>
+#include <string>
 #include <vector>
 #include <utility>
-#include <fstream>
-#include <sstream>
 
 int main(int argc, char **argv)
 {
-	for (int i = 1; i < argc; ++i)
+	usu::Lexer lex;
+	std::vector<std::pair<usu::DFA::Token, std::string>> res;
+
+	while (true)
 	{
-		std::ifstream f{argv[i]};
-		std::stringstream buffer;
-		buffer << f.rdbuf();
+		std::cout << "usu> " << std::flush;
+		std::string line;
+		std::getline(std::cin, line);
 
 		try
 		{
-			usu::Lexer lex;
-			std::vector<std::pair<usu::DFA::Token, std::string>> res = lex.analyse(buffer.str());
+			res = lex.analyze(line + '\n');
 			lex.print(res);
 		}
-		catch (const usu::Exception &e) 
+		catch(const usu::Exception &e)
 		{
-			std::cout << "Error while compiling " << argv[i] << "." << std::endl;
 			e.details();
 		}
 	}
-	
 }
