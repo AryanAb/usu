@@ -11,29 +11,26 @@ You can see a very basic usu program below.
 ```
 # All seven base SI quantities and their base units are built in
 
-length a = 10 m     # define length variable
-time t = 5 s        # define time variable
-mass m = 2 kg       # define mass variable
-current c = 4 A     # define electric current variable 
-temp k = 100 K      # define temperature variable
-amount n = 2 mol    # define amount of substance variable
-lum l = 3.3 cd      # define luminous intensity variable
-
-# define dimensionless variable when needed
-less c = 1
+length a = 10 <m>     # define length variable
+time t = 5 <s>        # define time variable
+mass M = 2 <kg>       # define mass variable
+current c = 4 <A>     # define electric current variable 
+temp k = 100 <K>      # define temperature variable
+amount n = 2 <mol>    # define amount of substance variable
+lum l = 3.3 <cd>      # define luminous intensity variable
 
 # define new dimension
-vel := length / time;
+vel := length / time
 
 # calculate an expression and assign it to new variable
 vel v = a / t
 
 # define new unit
-km := 1000 * m;
+km =: <1000 * m>
 
 # catch mistakes early
-length warn = a + 1 km    # Warning: adding two quantities of different units (m and km)
-length err = a + k        # Error: cannot add variables of dimension length to temperature
+length warn = a + 1 <km>    # Warning: adding two quantities of different units (m and km)
+length err = a + k          # Error: cannot add variables of dimension length to temperature
 ```
 
 
